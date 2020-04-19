@@ -9,27 +9,27 @@ import java.util.concurrent.TimeUnit;
 
 public class PlaceOrder {
     private WebDriver driver;
+    private WebElement element;
 
     public void setUp() throws InterruptedException {
-        System.setProperty("webdriver.chrome.driver", "src/resources/chromedriver.exe");
+        String os = System.getProperty("os.name").toLowerCase();
+        if(os.contains("mac")){
+            System.setProperty("webdriver.chrome.driver", "src/resources/chromedriver");
+        }
+        else{
+            System.setProperty("webdriver.chrome.driver", "src/resources/chromedriver.exe");
+        }
 
-        //Initiating the chromedriver application
+        //initialize the driver object
         driver = new ChromeDriver();
 
-        //The test URL
-        driver.get("https://konga.com");
-
-        //Wait period
-        Thread.sleep(5000);
-
-        //Display the web title on the debug window
-        System.out.println(driver.getTitle());
-
-        //Wait time before every step is performed
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-
-        //Maximize the window
+        //maximize the window
         driver.manage().window().maximize();
+
+        //visit konga page
+        driver.get("https://www.konga.com/");
+
+        Thread.sleep(5000);
 
         Actions builder = new Actions(driver);
 
@@ -37,10 +37,10 @@ public class PlaceOrder {
         driver.findElement(By.linkText("Login / Signup")).click();
 
         //Enter the user's username
-        driver.findElement(By.id("username")).sendKeys("*************");
+        driver.findElement(By.id("username")).sendKeys("Enter email");
 
         //Enter the user's password
-        driver.findElement(By.id("password")).sendKeys("**********");
+        driver.findElement(By.id("password")).sendKeys("****");
 
         //Click on Login button
         driver.findElement(By.xpath("//button[contains(.,'Login')]")).click();
@@ -53,34 +53,67 @@ public class PlaceOrder {
 
         //Mouse over the Computer Accessories menu
         builder.moveToElement(Comp_Accessories).build().perform();
-
-        //Click on Computer Peripherals and wait
-        driver.findElement(By.xpath("//a[@href='/category/peripherals-5238']")).click();
         Thread.sleep(3000);
 
-        //Enter the search item in the search field
-        driver.findElement(By.cssSelector(".f6ed2_25oVd #jsSearchInput")).sendKeys("Flash drive");
+        //Click on Computer Peripherals and wait
+        driver.findElement(By.linkText("Computer Peripherals")).click();
+        Thread.sleep(3000);
 
-        //Press enter key after typing the search item
-        driver.findElement(By.cssSelector(".f6ed2_25oVd #jsSearchInput")).sendKeys(Keys.ENTER);
+        //search for an item #jsSearchInput
+        driver.findElement(By.xpath("/html/body/div[1]/div/section/div[2]/nav/div[1]/div/div[2]/div/form/div[1]/input")).sendKeys("Samsung Phones");
 
-        //Click the item to be purchased
-        driver.findElement(By.xpath("//h3[contains(text(),'SanDisk 32gb Cruzer Blade Usb Flash D...')]")).click();
+        //click on the search button
+        driver.findElement(By.cssSelector("#app-content-wrapper > div.e5dc4_DR8xw > nav > div._2d4bb_2rbWX > div > div._63857_1TmYU > div > form > button")).click();
 
-        //Click on BUY NOW after the item has displayed
-        driver.findElement(By.xpath("//div[contains(@class,'_7bc9f_Ef1Zw')]//button[@class='_0a08a_3czMG _6d187_pzjfk'][contains(text(),'Buy Now')]")).click();
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-        //Click on the increase button (+)
-        driver.findElement(By.xpath("//div[contains(@class,'_99e8b_GvAfB')]//form[contains(@class,'d4e80_37RCm')]//div[contains(@class,'c1256_3sLN7')]//button[contains(text(),'+')]")).click();
-        driver.findElement(By.xpath("//button[contains(@name,'increment')]")).click();
-        driver.findElement(By.xpath("//button[contains(@name,'increment')]")).click();
+        //add to cart
+        try {
+            WebElement addToCart =  driver.findElement(By.cssSelector("#mainContent > section._9cac3_2I9l4 > section > section > section > section > ul > li:nth-child(1) > div > div > div._4941f_1HCZm > form > div._2aac2_3bwnD._549f7_zvZ8u._49c0c_3Cv2D._977c5_2vBMq > button"));
+            addToCart.click();
+            //b49ee_2pjyI
+        }
+        catch(org.openqa.selenium.StaleElementReferenceException ex)
+        {
+            System.out.println("element becomes state");
+            WebElement addToCart =  driver.findElement(By.cssSelector("#mainContent > section._9cac3_2I9l4 > section > section > section > section > ul > li:nth-child(1) > div > div > div._4941f_1HCZm > form > div._2aac2_3bwnD._549f7_zvZ8u._49c0c_3Cv2D._977c5_2vBMq > button"));
+            addToCart.click();
+        }
 
-        //Click on check out
-        driver.findElement(By.linkText("Continue to Checkout")).click();
+        Thread.sleep(5000);
+        //click to view cart preview
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        WebElement addToCart =  driver.findElement(By.cssSelector("#app-content-wrapper > div.e5dc4_DR8xw > nav > div._2d4bb_2rbWX > div > div.e5d46_2l87X._16536_xxIKG > a"));
+        addToCart.click();
+
+        Thread.sleep(5000);
+        System.out.println("get the cart increment button");
+        //get the cart increment button
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        WebElement incCart =  driver.findElement(By.cssSelector("#js-cart-items-wrapper > div > div > div.ed23a_3OozF > div.bb31e_ax8ka > form > div > div > button.c4079_DW1vB"));
+
+
+        System.out.println("start increment button");
+        //increment cart item
+        for(int i=0; i<3; i++){
+            incCart.click();
+            Thread.sleep(5000);
+        }
+
+        System.out.println("done increment button");
+
+        //checkout order
+
+        Thread.sleep(5000);
+        System.out.println("checkout order");
+        //checking out the order
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        WebElement checkOut =  driver.findElement(By.cssSelector("#app-content-wrapper > div.c6dfe_HidJc > section > section > aside > div.fb90d_2mSyi > div > div._2aac2_3bwnD._841f1_1RZK9 > button"));
+        checkOut.click();
 
         //Check if there is a delivery address already selected
         String text = "Select Delivery Address";
-        String bodyText = driver.findElement(By.linkText("Select Delivery Address")).getText();
+        String bodyText = driver.findElement(By.name("selectDeliveryAddress")).getText();
         if(bodyText.contains(text) == true){
             //Select the delivery address that already exist on user account
             driver.findElement(By.linkText("Select Delivery Address")).click();
@@ -144,12 +177,12 @@ public class PlaceOrder {
         JOptionPane.showMessageDialog(frame,
                 driver.findElement(By.xpath("//label[@id='card-number_unhappy']")).getText());
 
-
-        driver.quit();
     }
 
-    public  static void main (String args[]) throws InterruptedException {
-        PlaceOrder RunOrder = new PlaceOrder();
-        RunOrder.setUp();
+    public static void main(String args[]) throws InterruptedException {
+        PlaceOrder test= new PlaceOrder();
+        test.setUp();
+
     }
-}
+    }
+
