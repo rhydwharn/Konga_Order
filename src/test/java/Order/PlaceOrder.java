@@ -39,10 +39,10 @@ public class PlaceOrder {
         driver.findElement(By.linkText("Login / Signup")).click();
 
         //Enter the user's username
-        driver.findElement(By.id("username")).sendKeys("");
+        driver.findElement(By.id("username")).sendKeys("xxxxx");
 
         //Enter the user's password
-        driver.findElement(By.id("password")).sendKeys("");
+        driver.findElement(By.id("password")).sendKeys("xxxxx");
 
         //Click on Login button
         driver.findElement(By.xpath("//button[contains(.,'Login')]")).click();
