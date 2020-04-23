@@ -16,10 +16,10 @@ public class PlaceOrder {
 
         //Launch chrome driver pending on type of users's Operating System
         if(os.contains("mac")){
-            System.setProperty("webdriver.chrome.driver", "src/resources/chromedriver");
+            System.setProperty("webdriver.chrome.driver", "resources/chromedriver");
         }
         else{
-            System.setProperty("webdriver.chrome.driver", "src/resources/chromedriver.exe");
+            System.setProperty("webdriver.chrome.driver", "resources/chromedriver.exe");
         }
 
         //initialize the Chrome driver object
@@ -213,6 +213,8 @@ public class PlaceOrder {
 
         JOptionPane.showMessageDialog(frame,
                 driver.findElement(By.xpath("//label[@id='card-number_unhappy']")).getText());
+
+        driver.quit();
 
     }
 
